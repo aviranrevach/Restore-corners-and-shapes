@@ -15,6 +15,10 @@
   No API key. No network access. Just select and restore.
 </p>
 
+<p align="center">
+  <img src="Thumbnail%201920x1080-2.png" alt="Restore Shapes & Corners" width="100%" />
+</p>
+
 ```
                                                                            ╭───────╮
   ██████╗  ███████╗ ███████╗ ████████╗  ██████╗  ██████╗  ███████╗        ╭╯       ╰╮
