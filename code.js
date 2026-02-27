@@ -6,7 +6,7 @@
  */
 const PLUGIN_VERSION = "1.0.4";
 /** Injected at build time by scripts/inject-build.js */
-const BUILD_TIMESTAMP = "2026-02-24T21:22:37.709Z";
+const BUILD_TIMESTAMP = "2026-02-27T09:48:52.237Z";
 // Quarter-circle cubic Bezier: control point distance ≈ 0.552 * R (so R ≈ d/0.552)
 const K = (4 / 3) * Math.tan(Math.PI / 8);
 const INV_K = 1 / K;
@@ -830,6 +830,44 @@ function runAsRectangle(node, radiusSameRatio = 0.05) {
     figma.viewport.scrollAndZoomIntoView([rect]);
     return true;
 }
+/**
+ * Figma inscribes polygon/star vertices in an ellipse fitting the bounding box.
+ * The actual vertex bounding box is smaller than the Figma node bbox for most
+ * polygon counts. This computes the correct Figma bbox so the vertices match
+ * the original flattened path exactly.
+ */
+function computePolygonFigmaBBox(parsed, vBBox) {
+    const N = parsed.pointCount;
+    const cosVals = [];
+    const sinVals = [];
+    for (let k = 0; k < N; k++) {
+        const theta = (2 * Math.PI * k) / N - Math.PI / 2;
+        cosVals.push(Math.cos(theta));
+        sinVals.push(Math.sin(theta));
+    }
+    if (parsed.kind === "star") {
+        const r = parsed.innerRadius;
+        for (let k = 0; k < N; k++) {
+            const theta = (2 * Math.PI * k) / N - Math.PI / 2 + Math.PI / N;
+            cosVals.push(r * Math.cos(theta));
+            sinVals.push(r * Math.sin(theta));
+        }
+    }
+    const cosMin = Math.min(...cosVals);
+    const cosMax = Math.max(...cosVals);
+    const sinMin = Math.min(...sinVals);
+    const sinMax = Math.max(...sinVals);
+    const cosSpan = cosMax - cosMin;
+    const sinSpan = sinMax - sinMin;
+    if (cosSpan < 1e-9 || sinSpan < 1e-9) {
+        return { x: vBBox.minX, y: vBBox.minY, width: vBBox.width, height: vBBox.height };
+    }
+    const W = vBBox.width * 2 / cosSpan;
+    const H = vBBox.height * 2 / sinSpan;
+    const x = vBBox.minX - vBBox.width * (1 + cosMin) / cosSpan;
+    const y = vBBox.minY - vBBox.height * (1 + sinMin) / sinSpan;
+    return { x, y, width: W, height: H };
+}
 function runAsStarOrPolygonWithParsed(node, parsed) {
     const parent = node.parent;
     if (!parent || !("appendChild" in parent))
@@ -849,10 +887,11 @@ function runAsStarOrPolygonWithParsed(node, parsed) {
         polygon.pointCount = parsed.pointCount;
         shape = polygon;
     }
+    const figmaBBox = computePolygonFigmaBBox(parsed, { minX, minY, width, height });
     shape.name = node.name + " (Restored corners)";
-    shape.x = node.x + minX;
-    shape.y = node.y + minY;
-    shape.resize(width, height);
+    shape.x = node.x + figmaBBox.x;
+    shape.y = node.y + figmaBBox.y;
+    shape.resize(figmaBBox.width, figmaBBox.height);
     shape.fills = Array.isArray(node.fills) ? node.fills : [];
     shape.strokes = Array.isArray(node.strokes) ? node.strokes : [];
     shape.strokeWeight = typeof node.strokeWeight === "number" ? node.strokeWeight : 1;
