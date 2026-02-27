@@ -1,5 +1,5 @@
 {
-  "name": "Restore Rounded Corners",
+  "name": "Restore Shapes & Corners",
   "id": "unflatten-rounded-corners",
   "api": "1.0.0",
   "editorType": ["figma"],
@@ -8,7 +8,7 @@
   "documentAccess": "dynamic-page",
   "networkAccess": { "allowedDomains": ["none"] },
   "menu": [
-    { "name": "Restore rounded corners…", "command": "showUI" },
+    { "name": "Restore shapes & corners…", "command": "showUI" },
     { "separator": true },
     { "name": "Restore rectangle corners", "command": "asRectangle" },
     { "name": "Restore freeshape corners", "command": "inPlace" }

@@ -1,7 +1,7 @@
 {
   "name": "unflatten-rounded-corners",
   "version": "1.0.0",
-  "description": "Figma plugin: unflatten a rounded-rectangle path back into an editable rectangle with dynamic corner radius",
+  "description": "Figma plugin: reverse-engineer flattened shapes and corners back into editable Figma primitives",
   "scripts": {
     "build": "tsc && node scripts/inject-build.js",
     "watch": "tsc -w"

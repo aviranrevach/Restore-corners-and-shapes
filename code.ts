@@ -1,5 +1,5 @@
 /**
- * Restore Rounded Corners — Figma Plugin
+ * Restore Shapes & Corners — Figma Plugin
  * Select a flattened path (rounded-rectangle turned into vectors).
  * The plugin reverse-engineers it into an editable rectangle with dynamic corner radius.
  */
@@ -1191,7 +1191,7 @@ function run(): void {
   const command = figma.command || "showUI";
 
   if (command === "showUI") {
-    figma.showUI(__html__, { width: 462, height: 560, title: "Restore Rounded Corners" });
+    figma.showUI(__html__, { width: 462, height: 560, title: "Restore Shapes & Corners" });
     const sendSelectionState = async () => {
       const vectors = getSelectedVectors();
       const tolerance = await getTolerance();

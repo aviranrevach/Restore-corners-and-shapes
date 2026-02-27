@@ -1,41 +1,127 @@
-# Restore Rounded Corners — Figma Plugin
+# Restore Shapes & Corners
 
-Select a **flattened** rounded rectangle (a box with rounded corners that was turned into a vector path). The plugin reverse-engineers the path and recreates it as an **editable rectangle** with dynamic corner radius so you can adjust the corners again in the design panel.
+---
 
-## How to use
+<p align="center">
+  <img src="https://img.shields.io/badge/Figma-Plugin-blueviolet?logo=figma&logoColor=white" alt="Figma Plugin" />
+  <img src="https://img.shields.io/badge/Platform-Desktop-blue" alt="Desktop" />
+  <img src="https://img.shields.io/badge/No%20API%20Key-Required-green" alt="No API Key Required" />
+  <img src="https://img.shields.io/badge/TypeScript-Powered-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+</p>
 
-1. In Figma, create a rectangle and set corner radius (or use an existing rounded rectangle).
-2. **Flatten** it: select the shape → right-click → **Flatten** (or use the flatten command). It becomes a single vector path.
-3. Run the plugin: **Plugins** → **Development** → **Import plugin from manifest…** and choose the `manifest.json` in this folder (or run it if already installed).
-4. With the vector selected, run **Restore Rounded Corners** and choose:
-   - **Restore as Rectangle** — For a flattened rounded **box**: replaces the vector with a Rectangle node so the radius handles appear in the panel. Use this for rounded rectangles.
-   - **Restore Corners in Place** — Keeps the vector: for rounded-rect paths it sets vertex corner radius; for other shapes (e.g. open paths) it tries to make corners roundable with a default radius.
+<p align="center">
+  <strong>Reverse-engineer flattened shapes and corners back into editable Figma primitives.</strong><br/>
+  Get your corner radius controls back in one click.<br/>
+  No API key. No network access. Just select and restore.
+</p>
+
+```
+                                                                           ╭───────╮
+  ██████╗  ███████╗ ███████╗ ████████╗  ██████╗  ██████╗  ███████╗        ╭╯       ╰╮
+  ██╔══██╗ ██╔════╝ ██╔════╝ ╚══██╔══╝ ██╔═══██╗ ██╔══██╗ ██╔════╝        │  ●   ●  │
+  ██████╔╝ █████╗   ███████╗    ██║    ██║   ██║ ██████╔╝ █████╗          │         │
+  ██╔══██╗ ██╔══╝   ╚════██║    ██║    ██║   ██║ ██╔══██╗ ██╔══╝          │         │
+  ██║  ██║ ███████╗ ███████║    ██║     ╚██████╔╝ ██║  ██║ ███████╗       │         │
+  ╚═╝  ╚═╝ ╚══════╝ ╚══════╝    ╚═╝      ╚═════╝  ╚═╝  ╚═╝ ╚══════╝       │         │
+                                                                          │         │
+  ╔═╗ ╦ ╦ ╔═╗ ╔═╗ ╔═╗ ╔═╗              ╔═╗ ╔═╗ ╦═╗ ╔╗╔ ╔═╗ ╦═╗ ╔═╗        │  ●   ●  │
+  ╚═╗ ╠═╣ ╠═╣ ╠═╝ ║╣  ╚═╗      &       ║   ║ ║ ╠╦╝ ║║║ ║╣  ╠╦╝ ╚═╗        ╰╮       ╭╯
+  ╚═╝ ╩ ╩ ╩ ╩ ╩   ╚═╝ ╚═╝              ╚═╝ ╚═╝ ╩╚═ ╝╚╝ ╚═╝ ╩╚═ ╚═╝         ╰───────╯
+```
+
+---
+
+## What is This?
+
+A Figma plugin that reverse-engineers flattened vectors back into editable Figma primitives. When you flatten a shape in Figma, it becomes a raw vector path — the plugin analyzes the path data, detects what the original shape was, and recreates it as a proper editable node.
+
+Three restore modes:
+
+- **Rectangles** — Reverse-engineers flattened rounded rectangles. Parses the Bezier curves, calculates each corner radius, and replaces the vector with a proper `Rectangle` node so the radius handles return to the properties panel
+- **Freeshape** — Reverse-engineers corners on any vector path. Keeps the vector but applies vertex corner radii — works for free-form shapes, open paths, and non-rectangular geometry
+- **Regenerate shapes** — Auto-detects the original shape type (rectangle, ellipse, star, polygon) and reverse-engineers it back into the matching Figma primitive. Select any flattened shape and the plugin figures out what it was
+
+Other features:
+
+- **Per-Corner Detection** — Each corner can have a different radius, all are reverse-engineered independently from the Bezier control points
+- **Preserves Styling** — Fills, strokes, and effects are carried over to the restored shape
+- **Corner Picker** — Visually select which specific corners to restore (Freeshape mode)
+- **Tolerance Settings** — Fine-tune merge distance and radius unification for tricky shapes
+- **Multi-Selection** — Process multiple vectors at once
+- **Undo Support** — One-click undo to revert any restore operation
+- **Zero Network Access** — Runs entirely local, no external calls, no data leaves your machine
+
+---
+
+## How It Works
+
+The plugin reverse-engineers flattened shapes by reading the raw vector path data:
+
+1. **Parses** the path commands (M, L, C, Q, Z) from the selected vector
+2. **Detects** the shape pattern — rounded rectangle (4 lines + 4 curves), ellipse, star, or polygon
+3. **Reverse-engineers** corner radii from Bezier control points using quarter-circle approximation (~0.552 x radius)
+4. **Recreates** the shape as a native Figma node with full editability
+
+```
+Flattened Vector          Reverse-Engineered        Restored Primitive
+┌─────────────┐     ┌─────────────────────┐     ┌─────────────────┐
+│  Raw vector  │     │  Shape detection     │     │  Rectangle      │
+│  M/L/C/Z     │ ──> │  Bezier analysis     │ ──> │  Ellipse        │
+│  commands    │     │  Radius calculation  │     │  Star / Polygon │
+└─────────────┘     └─────────────────────┘     └─────────────────┘
+```
+
+---
+
+## Getting Started
+
+### Install from source
+
+```bash
+git clone https://github.com/aviranrevach/Restore-corners-and-shapes.git
+cd Restore-corners-and-shapes
+npm install
+npm run build
+```
+
+### Load in Figma
+
+1. Open Figma Desktop
+2. **Plugins > Development > Import plugin from manifest...**
+3. Select the `manifest.json` from this folder
+
+### Usage
+
+1. Select one or more flattened vectors
+2. Run the plugin: **Plugins > Restore Shapes & Corners**
+3. Choose your restore mode (Rectangles, Freeshape, or Regenerate shapes) — done
+
+---
 
 ## Development
 
-- **Build:** `npm run build` — compiles `code.ts` → `code.js`
-- **Watch:** `npm run watch` — recompile on save
+```bash
+npm run build    # Compile code.ts -> code.js
+npm run watch    # Recompile on save
+```
 
-Then in Figma: **Plugins** → **Development** → **Import plugin from manifest…** and select this folder’s `manifest.json`.
-
-## How it works
-
-When you flatten a rounded rectangle, Figma converts it to a vector path made of lines and cubic Bézier curves (no SVG arc command). The plugin:
-
-1. Reads the path data from the selected vector.
-2. Parses **M** (move), **L** (line), **C** (cubic), **Q** (quadratic), **Z** (close) commands.
-3. Detects a rounded-rectangle pattern: 4 lines + 4 curves.
-4. Estimates each corner radius from the Bézier control points (quarter-circle approximation: control-point distance ≈ 0.552 × radius).
-5. Creates a new `Rectangle` node with the same bounds and per-corner radii, copies fills/strokes/effects, then replaces the flattened vector.
+---
 
 ## Requirements
 
-- Selection must be a **single vector** node (the result of flattening a rounded rectangle).
-- The path must be a single closed path with exactly 4 curves and 4 line segments (standard rounded-rect shape).
+- Selection must contain **vector nodes** (the result of flattening shapes)
+- For rectangle mode: path needs 4 curves + 4 line segments (standard rounded-rect)
+- For regenerate shapes: works with rectangles, ellipses, stars, and polygons
+- Complex boolean results may need to be flattened individually first
 
-If the path format is different (e.g. from a boolean or more complex flatten), the plugin will show a message and you may need to flatten only the rounded rectangle itself.
+---
 
-## Plugin icon
+## License
 
-- **`icon.svg`** — Rounded rectangle outline (scalable). Use this when publishing to the Figma Community: open it in Figma, then export as PNG (e.g. 128×128 or 192×192) and upload in the Publish plugin modal.
-- **`icon.png`** — Same icon as PNG at 128×128 for quick use.
+MIT
+
+---
+
+<p align="center">
+  Built by <a href="https://github.com/aviranrevach">Aviran Revach</a>
+</p>
