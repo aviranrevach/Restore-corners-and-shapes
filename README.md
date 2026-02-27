@@ -57,6 +57,10 @@ Other features:
 - **Undo Support** — One-click undo to revert any restore operation
 - **Zero Network Access** — Runs entirely local, no external calls, no data leaves your machine
 
+<p align="center">
+  <img src="plugin-UI.png" alt="Plugin UI" width="600" />
+</p>
+
 ---
 
 ## How It Works
@@ -70,11 +74,11 @@ The plugin reverse-engineers flattened shapes by reading the raw vector path dat
 
 ```
 Flattened Vector          Reverse-Engineered        Restored Primitive
-┌─────────────┐     ┌─────────────────────┐     ┌─────────────────┐
-│  Raw vector  │     │  Shape detection     │     │  Rectangle      │
-│  M/L/C/Z     │ ──> │  Bezier analysis     │ ──> │  Ellipse        │
-│  commands    │     │  Radius calculation  │     │  Star / Polygon │
-└─────────────┘     └─────────────────────┘     └─────────────────┘
++---------------+     +-----------------------+     +-------------------+
+|  Raw vector   |     |  Shape detection      |     |  Rectangle        |
+|  M/L/C/Z      | --> |  Bezier analysis      | --> |  Ellipse          |
+|  commands     |     |  Radius calculation   |     |  Star / Polygon   |
++---------------+     +-----------------------+     +-------------------+
 ```
 
 ---
