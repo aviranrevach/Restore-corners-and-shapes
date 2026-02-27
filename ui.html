@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 16px 20px;
+      font-family: 'Figtree', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 12px;
+      color: #333;
+      background: #fff;
+      overflow: hidden;
+    }
+    .header {
+      margin-bottom: 10px;
+    }
+    .header h1 {
+      margin: 0;
+      font-family: 'Figtree', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #000;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+    .version-block {
+      margin-top: 6px;
+      font-size: 11px;
+      font-weight: 400;
+      color: #999;
+      line-height: 1.5;
+    }
+    .version-block .version-author { display: block; }
+    .footer {
+      margin-top: 12px;
+      padding-top: 6px;
+      font-size: 11px;
+      color: #999;
+    }
+    .options-row {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .segmented {
+      flex: 1;
+      display: flex;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f0f0f0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+    }
+    .option {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 14px 10px;
+      border: none;
+      border-right: 1px solid #e0e0e0;
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 400;
+      color: #555;
+      text-align: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .segmented .option:last-child {
+      border-right: none;
+    }
+    .option-standalone {
+      flex: none;
+      min-width: 120px;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      background: #f0f0f0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+    }
+    .option-standalone:hover {
+      background: #e8e8e8;
+    }
+    .option-standalone.selected {
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .option:hover {
+      background: #e8e8e8;
+      color: #333;
+    }
+    .option.selected {
+      background: #fff;
+      color: #0d99ff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .option .icon {
+      flex-shrink: 0;
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .option .icon svg {
+      width: 100%;
+      height: 100%;
+    }
+    .option .icon-original {
+      display: flex;
+    }
+    .option .icon-mono {
+      display: none;
+    }
+    .apply-row {
+      margin-top: 12px;
+      width: 100%;
+    }
+    .apply-btn {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #0d99ff;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .apply-btn:hover {
+      background: #0b85e0;
+    }
+    .apply-btn:disabled {
+      background: #e0e0e0;
+      color: #888;
+      cursor: not-allowed;
+    }
+    .feedback {
+      margin-top: 12px;
+      padding: 0;
+      border-radius: 8px;
+      font-size: 11px;
+      display: none;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+    .feedback.success {
+      display: block;
+      background: #fff;
+      border: 1px solid #c8e6c9;
+    }
+    .feedback.success .feedback-msg {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 8px 12px;
+      margin: 0;
+    }
+    .feedback.error {
+      display: block;
+      background: #fff;
+      border: 1px solid #ffcdd2;
+    }
+    .feedback.error .feedback-msg {
+      background: #ffebee;
+      color: #c62828;
+      padding: 8px 12px;
+      margin: 0;
+    }
+    .feedback-actions {
+      padding: 6px 12px;
+      background: #fff;
+      border-top: 1px solid #e8e8e8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feedback-msg {
+      margin-bottom: 0;
+    }
+    .undo-btn {
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 500;
+      border: 1px solid #2e7d32;
+      border-radius: 6px;
+      background: #fff;
+      color: #2e7d32;
+      cursor: pointer;
+    }
+    .undo-btn:hover {
+      background: #e8f5e9;
+    }
+    .feedback.error .feedback-actions { border-top-color: #ffcdd2; }
+    .feedback.error .undo-btn { border-color: #c62828; color: #c62828; }
+    .feedback.error .undo-btn:hover { background: #ffebee; }
+    .preview-line {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #666;
+      min-height: 16px;
+    }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+    .settings-btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: #666;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .settings-btn:hover {
+      background: #eee;
+      color: #333;
+    }
+    .settings-btn.selected {
+      background: #e3f2fd;
+      color: #0d99ff;
+    }
+    .settings-btn.selected:hover {
+      background: #bbdefb;
+      color: #0d99ff;
+    }
+    .settings-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+    .main-content {
+      display: block;
+    }
+    .main-content.hidden {
+      display: none;
+    }
+    .tolerance-section {
+      margin-top: 16px;
+      padding: 20px 18px;
+      background: #f8f9fa;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      display: none;
+      position: relative;
+    }
+    .tolerance-section.visible {
+      display: block;
+    }
+    .tolerance-section .tolerance-header {
+      padding-right: 40px;
+      margin-bottom: 8px;
+    }
+    .tolerance-section .tolerance-title {
+      font-weight: 600;
+      color: #1a1a1a;
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .tolerance-close {
+      position: absolute;
+      top: 18px;
+      right: 14px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: #666;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tolerance-close:hover {
+      background: #eee;
+      color: #333;
+    }
+    .tolerance-section .tolerance-intro {
+      margin: 0 0 20px 0;
+      font-size: 12px;
+      color: #555;
+      line-height: 1.5;
+    }
+    .tolerance-section .slider-value .unit {
+      font-weight: 500;
+      color: #666;
+      font-size: 14px;
+    }
+    .tolerance-section .tolerance-item {
+      margin-bottom: 22px;
+    }
+    .tolerance-section .tolerance-item:last-of-type {
+      margin-bottom: 20px;
+    }
+    .tolerance-section .option-label {
+      display: block;
+      color: #333;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+    .tolerance-section .option-label .hint {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: #666;
+      margin-top: 4px;
+      line-height: 1.45;
+    }
+    .tolerance-section .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .tolerance-section .slider-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+    .tolerance-section input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #e0e0e0;
+      border-radius: 3px;
+      outline: none;
+    }
+    .tolerance-section input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #0d99ff;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .tolerance-section input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #0d99ff;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .tolerance-section .slider-value {
+      flex-shrink: 0;
+      min-width: 56px;
+      font-size: 17px;
+      font-weight: 600;
+      color: #1a1a1a;
+      text-align: right;
+      letter-spacing: 0.02em;
+    }
+    .tolerance-section .slider-value.changed {
+      color: #0d99ff;
+    }
+    .tolerance-section .slider-value.changed .unit {
+      color: #0d99ff;
+    }
+    .tolerance-reset-row {
+      margin-top: 4px;
+      padding-top: 16px;
+      border-top: 1px solid #e8e8e8;
+    }
+    .tolerance-reset-btn {
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+      color: #555;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .tolerance-reset-btn:hover {
+      background: #f5f5f5;
+      border-color: #bbb;
+      color: #333;
+    }
+    .tolerance-reset-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .tolerance-reset-btn:disabled:hover {
+      background: #fff;
+      border-color: #ccc;
+      color: #555;
+    }
+    /* Corner picker */
+    .corner-picker {
+      display: none;
+      margin-top: 10px;
+    }
+    .corner-picker.visible {
+      display: block;
+    }
+    .corner-picker-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 12px;
+      color: #555;
+    }
+    .corner-picker-toggle input[type="checkbox"] {
+      accent-color: #0d99ff;
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      cursor: pointer;
+    }
+    /* Corner picker panel (replaces main content) */
+    .corner-panel {
+      display: none;
+    }
+    .corner-panel.visible {
+      display: block;
+    }
+    .corner-panel-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      color: #555;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      margin-bottom: 10px;
+    }
+    .corner-panel-back:hover {
+      background: #f5f5f5;
+      border-color: #ccc;
+    }
+    .corner-svg-wrap {
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      background: #1a1a1a;
+      padding: 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 140px;
+    }
+    .corner-svg-wrap svg {
+      max-width: 100%;
+      max-height: 420px;
+    }
+    .corner-list {
+      margin-top: 0;
+      max-height: 140px;
+      overflow-y: auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background: #f8f9fa;
+    }
+    .corner-list:empty {
+      display: none;
+    }
+    .corner-list-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      font-size: 11px;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+    .corner-list-item:last-child {
+      border-bottom: none;
+    }
+    .corner-list-item:hover {
+      background: #eef6ff;
+    }
+    .corner-list-item input[type="checkbox"] {
+      accent-color: #0d99ff;
+      width: 13px;
+      height: 13px;
+      margin: 0;
+      cursor: pointer;
+    }
+    .corner-dot {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .corner-list-item .corner-info {
+      flex: 1;
+    }
+    .corner-list-item .corner-radius {
+      color: #888;
+      font-size: 10px;
+    }
+    .corner-list-msg {
+      padding: 8px 10px;
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header" id="header-row">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <div>
+        <h1>Restore Rounded Corners</h1>
+        <div class="version-block">
+          <span id="version-author" class="version-author">V1.0.0, By Aviran Revach</span>
+        </div>
+      </div>
+      <button type="button" class="settings-btn" id="settings-btn" title="Tolerance options">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div id="main-content" class="main-content">
+  <p style="margin: 0 0 6px 0; color: #666;">Restore flattened shapes to Figma rectangles, ellipses, or editable rounded vectors.</p>
+  <div class="options-row">
+  <div class="segmented">
+    <div class="option selected" data-option="asRectangle">
+      <span class="icon icon-original">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="5.64423" y="5.64429" width="20.7115" height="20.7115" rx="4" stroke="#1A1A1A" stroke-width="3" stroke-linejoin="round"/>
+          <rect x="5.64423" y="5.64429" width="20.7115" height="20.7115" rx="4" stroke="#319CFF" stroke-width="0.6" stroke-linejoin="round"/>
+          <circle cx="10.5558" cy="10.5681" r="1.37555" fill="white" stroke="#319CFF" stroke-width="0.6" stroke-linejoin="round"/>
+          <circle cx="10.5558" cy="21.5494" r="1.37555" fill="white" stroke="#319CFF" stroke-width="0.6" stroke-linejoin="round"/>
+          <circle cx="21.6003" cy="10.5681" r="1.37555" fill="white" stroke="#319CFF" stroke-width="0.6" stroke-linejoin="round"/>
+          <circle cx="21.6003" cy="21.5494" r="1.37555" fill="white" stroke="#319CFF" stroke-width="0.6" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="icon icon-mono">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+          <rect x="5.64423" y="5.64429" width="20.7115" height="20.7115" rx="4" stroke-width="2.5"/>
+          <circle cx="10.5558" cy="10.5681" r="1.37555" fill="white" stroke="currentColor" stroke-width="0.6"/>
+          <circle cx="10.5558" cy="21.5494" r="1.37555" fill="white" stroke="currentColor" stroke-width="0.6"/>
+          <circle cx="21.6003" cy="10.5681" r="1.37555" fill="white" stroke="currentColor" stroke-width="0.6"/>
+          <circle cx="21.6003" cy="21.5494" r="1.37555" fill="white" stroke="currentColor" stroke-width="0.6"/>
+        </svg>
+      </span>
+      <span>Rectangles</span>
+    </div>
+    <div class="option" data-option="inPlace">
+      <span class="icon icon-original">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3.04344 26.0728L9.73138 14.9039C11.5672 11.838 16.1958 12.5347 17.0478 16.0052L18.1381 20.4462C18.5912 22.2919 21.1213 22.5244 21.9033 20.7922L28.7507 5.62378" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3.04344 26.0728L14.7286 6.55856L19.5195 26.0728L28.7507 5.62378" stroke="#319CFF" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="13.5742" cy="14.4727" r="1.37555" fill="white" stroke="#319CFF" stroke-width="0.6" stroke-linejoin="round"/>
+          <circle cx="20.5561" cy="17.3755" r="1.37555" fill="white" stroke="#319CFF" stroke-width="0.6" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="icon icon-mono">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3.04344 26.0728L9.73138 14.9039C11.5672 11.838 16.1958 12.5347 17.0478 16.0052L18.1381 20.4462C18.5912 22.2919 21.1213 22.5244 21.9033 20.7922L28.7507 5.62378" stroke-width="2.5"/>
+          <path d="M3.04344 26.0728L14.7286 6.55856L19.5195 26.0728L28.7507 5.62378" stroke-width="0.6"/>
+          <circle cx="13.5742" cy="14.4727" r="1.37555" fill="white" stroke="currentColor" stroke-width="0.6"/>
+          <circle cx="20.5561" cy="17.3755" r="1.37555" fill="white" stroke="currentColor" stroke-width="0.6"/>
+        </svg>
+      </span>
+      <span>Freeshape</span>
+    </div>
+  </div>
+  <div class="option option-standalone" data-option="shapes">
+    <span class="icon icon-original">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="16.544" cy="21.0599" rx="12.1195" ry="7.60459" transform="rotate(1.03648 16.544 21.0599)" stroke="#1A1A1A" stroke-width="3" stroke-linejoin="round"/>
+        <ellipse cx="16.544" cy="21.0599" rx="12.1195" ry="7.60459" transform="rotate(1.03648 16.544 21.0599)" stroke="#319CFF" stroke-width="0.6" stroke-linejoin="round"/>
+        <path d="M16.9455 2.39648L19.7524 7.54334L25.5148 8.62243L21.4872 12.8824L22.2416 18.6962L16.9455 16.1822L11.6494 18.6962L12.4038 12.8824L8.37624 8.62243L14.1386 7.54334L16.9455 2.39648Z" stroke="#1A1A1A" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M16.9455 2.39648L19.7524 7.54334L25.5148 8.62243L21.4872 12.8824L22.2416 18.6962L16.9455 16.1822L11.6494 18.6962L12.4038 12.8824L8.37624 8.62243L14.1386 7.54334L16.9455 2.39648Z" stroke="#319CFF" stroke-width="0.6" stroke-linejoin="round"/>
+        <circle cx="25.2674" cy="21.2176" r="0.99408" transform="rotate(1.03648 25.2674 21.2176)" fill="white" stroke="#319CFF" stroke-width="0.6" stroke-linejoin="round"/>
+        <circle cx="16.9455" cy="6.8147" r="1.10938" fill="white" stroke="#319CFF" stroke-width="0.6" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="icon icon-mono">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+        <ellipse cx="16.544" cy="21.0599" rx="12.1195" ry="7.60459" transform="rotate(1.03648 16.544 21.0599)" stroke-width="2"/>
+        <path d="M16.9455 2.39648L19.7524 7.54334L25.5148 8.62243L21.4872 12.8824L22.2416 18.6962L16.9455 16.1822L11.6494 18.6962L12.4038 12.8824L8.37624 8.62243L14.1386 7.54334L16.9455 2.39648Z" stroke-width="2"/>
+      </svg>
+    </span>
+    <span>Regenerate shapes</span>
+  </div>
+  </div>
+  <p id="preview-line" class="preview-line"></p>
+  <div class="corner-picker" id="corner-picker">
+    <label class="corner-picker-toggle">
+      <input type="checkbox" id="pick-corners-cb" />
+      Pick specific corners
+    </label>
+  </div>
+  <div class="apply-row">
+    <button class="apply-btn" id="apply" disabled>Nothing is selected</button>
+  </div>
+  <div class="feedback" id="feedback">
+    <div class="feedback-msg" id="feedback-msg"></div>
+    <div class="feedback-actions" id="feedback-actions" style="display: none;">
+      <button class="undo-btn" id="undo">Undo</button>
+    </div>
+  </div>
+  </div>
+  <div class="tolerance-section" id="tolerance-section">
+    <div class="tolerance-header">
+      <div class="tolerance-title">Tolerance options</div>
+      <button type="button" class="tolerance-close" id="tolerance-close" title="Close" aria-label="Close">×</button>
+    </div>
+    <p class="tolerance-intro">Fine-tune how the plugin detects and merges corners. Only change these if results look off.</p>
+    <div class="tolerance-item">
+      <label class="option-label" for="merge-px">
+        Merge distance
+        <span class="hint">Lower = only very close points merge. Higher = more forgiving (good for rough or scaled shapes).</span>
+      </label>
+      <div class="slider-row">
+        <div class="slider-wrap">
+          <input type="range" id="merge-px" min="1" max="100" value="14" />
+        </div>
+        <span class="slider-value" id="merge-px-value">14 <span class="unit">px</span></span>
+      </div>
+    </div>
+    <div class="tolerance-item">
+      <label class="option-label" for="radius-ratio">
+        Unify corner radius
+        <span class="hint">If all four corners have similar curvature, the plugin uses a single radius. This sets how similar they must be.</span>
+      </label>
+      <div class="slider-row">
+        <div class="slider-wrap">
+          <input type="range" id="radius-ratio" min="1" max="50" value="5" />
+        </div>
+        <span class="slider-value" id="radius-ratio-value">0.05</span>
+      </div>
+    </div>
+    <div class="tolerance-reset-row">
+      <button type="button" class="tolerance-reset-btn" id="tolerance-reset" disabled>Reset to original settings</button>
+    </div>
+  </div>
+  <div class="corner-panel" id="corner-panel">
+    <button type="button" class="corner-panel-back" id="corner-back">&larr; Back</button>
+    <div class="corner-svg-wrap" id="corner-svg-wrap"></div>
+    <div id="corner-list" class="corner-list"></div>
+    <div class="apply-row" style="margin-top: 10px;">
+      <button class="apply-btn" id="corner-apply">Restore selected corners</button>
+    </div>
+  </div>
+  <div class="footer" id="build-date">—</div>
+  <script>
+    var selectedOption = 'asRectangle';
+    var feedbackEl = document.getElementById('feedback');
+    var feedbackMsg = document.getElementById('feedback-msg');
+
+    function updatePreview(text) {
+      var el = document.getElementById('preview-line');
+      el.textContent = text || '';
+    }
+    function updateApplyButton(hasSelection, selectionCount, command) {
+      var applyBtn = document.getElementById('apply');
+      applyBtn.disabled = !hasSelection;
+      if (!hasSelection) {
+        applyBtn.textContent = 'Nothing is selected';
+        return;
+      }
+      if (command === 'shapes') {
+        applyBtn.textContent = selectionCount > 1 ? 'Regenerate shapes (' + selectionCount + ')' : 'Regenerate shape';
+      } else {
+        applyBtn.textContent = selectionCount > 1 ? 'Restore corners (' + selectionCount + ')' : 'Restore corners';
+      }
+    }
+    var DEFAULT_MERGE_PX = 14;
+    var DEFAULT_RADIUS_RATIO = 0.05;
+    function getRadiusRatioFromSlider() {
+      var s = document.getElementById('radius-ratio');
+      return s ? parseInt(s.value, 10) / 100 : DEFAULT_RADIUS_RATIO;
+    }
+    function isAtDefaultTolerance() {
+      var pxEl = document.getElementById('merge-px');
+      var ratioEl = document.getElementById('radius-ratio');
+      if (!pxEl || !ratioEl) return true;
+      var px = parseInt(pxEl.value, 10);
+      var ratio = parseInt(ratioEl.value, 10) / 100;
+      return px === DEFAULT_MERGE_PX && Math.abs(ratio - DEFAULT_RADIUS_RATIO) < 0.001;
+    }
+    function updateResetButton() {
+      var resetBtn = document.getElementById('tolerance-reset');
+      if (resetBtn) resetBtn.disabled = isAtDefaultTolerance();
+      var pxEl = document.getElementById('merge-px');
+      var ratioEl = document.getElementById('radius-ratio');
+      var pxVal = document.getElementById('merge-px-value');
+      var ratioVal = document.getElementById('radius-ratio-value');
+      if (pxVal) pxVal.classList.toggle('changed', pxEl && parseInt(pxEl.value, 10) !== DEFAULT_MERGE_PX);
+      if (ratioVal) ratioVal.classList.toggle('changed', ratioEl && Math.abs(parseInt(ratioEl.value, 10) / 100 - DEFAULT_RADIUS_RATIO) >= 0.001);
+    }
+    function updateToleranceInputs(t) {
+      if (!t) return;
+      var pxEl = document.getElementById('merge-px');
+      var ratioEl = document.getElementById('radius-ratio');
+      var pxVal = document.getElementById('merge-px-value');
+      var ratioVal = document.getElementById('radius-ratio-value');
+      if (pxEl && t.mergeDistancePx != null) {
+        pxEl.value = t.mergeDistancePx;
+        if (pxVal) pxVal.innerHTML = t.mergeDistancePx + ' <span class="unit">px</span>';
+      }
+      if (ratioEl && t.radiusSameRatio != null) {
+        ratioEl.value = Math.round(t.radiusSameRatio * 100);
+        if (ratioVal) ratioVal.textContent = t.radiusSameRatio.toFixed(2);
+      }
+      updateResetButton();
+    }
+
+    var lastHasSelection = false;
+    var lastSelectionCount = 0;
+    var cornerCandidates = [];
+    var cornerPanelOpen = false;
+
+    function updateCornerPickerVisibility() {
+      var picker = document.getElementById('corner-picker');
+      if (selectedOption === 'inPlace') {
+        picker.classList.add('visible');
+      } else {
+        picker.classList.remove('visible');
+        document.getElementById('pick-corners-cb').checked = false;
+        if (cornerPanelOpen) closeCornerPanel();
+      }
+    }
+    function openCornerPanel() {
+      cornerPanelOpen = true;
+      document.getElementById('main-content').classList.add('hidden');
+      document.getElementById('corner-panel').classList.add('visible');
+      document.getElementById('header-row').style.display = 'none';
+      document.getElementById('build-date').style.display = 'none';
+      document.getElementById('corner-svg-wrap').innerHTML = '<div class="corner-list-msg">Detecting corners…</div>';
+      document.getElementById('corner-list').innerHTML = '';
+      parent.postMessage({ pluginMessage: { type: 'resize', width: 462, height: 900 } }, '*');
+      parent.postMessage({ pluginMessage: { type: 'detectCorners' } }, '*');
+    }
+    function closeCornerPanel() {
+      cornerPanelOpen = false;
+      document.getElementById('main-content').classList.remove('hidden');
+      document.getElementById('corner-panel').classList.remove('visible');
+      document.getElementById('header-row').style.display = '';
+      document.getElementById('build-date').style.display = '';
+      document.getElementById('pick-corners-cb').checked = false;
+      cornerCandidates = [];
+      parent.postMessage({ pluginMessage: { type: 'resize', width: 462, height: 560 } }, '*');
+    }
+    function renderCornerPanel(corners, colors, paths, bbox) {
+      cornerCandidates = corners;
+      var svgWrap = document.getElementById('corner-svg-wrap');
+      var list = document.getElementById('corner-list');
+      if (!corners || corners.length === 0) {
+        svgWrap.innerHTML = '<div class="corner-list-msg">No corners detected.</div>';
+        list.innerHTML = '';
+        return;
+      }
+      var pad = 8;
+      var bw = bbox.maxX - bbox.minX;
+      var bh = bbox.maxY - bbox.minY;
+      var vbX = bbox.minX - pad;
+      var vbY = bbox.minY - pad;
+      var vbW = bw + pad * 2;
+      var vbH = bh + pad * 2;
+      var dotR = Math.max(4, Math.min(bw, bh) * 0.06);
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + vbX + ' ' + vbY + ' ' + vbW + ' ' + vbH + '">';
+      for (var p = 0; p < paths.length; p++) {
+        svg += '<path d="' + paths[p] + '" fill="none" stroke="#fff" stroke-width="' + (Math.max(bw, bh) * 0.02) + '" stroke-linecap="round" stroke-linejoin="round"/>';
+      }
+      for (var i = 0; i < corners.length; i++) {
+        var c = corners[i];
+        var col = (colors && colors[i]) || '#0D99FF';
+        svg += '<circle cx="' + c.position.x + '" cy="' + c.position.y + '" r="' + dotR + '" fill="' + col + '" stroke="#fff" stroke-width="' + (dotR * 0.3) + '" data-corner-idx="' + i + '" style="cursor:pointer"/>';
+        svg += '<text x="' + c.position.x + '" y="' + (c.position.y + dotR * 0.38) + '" text-anchor="middle" fill="#fff" font-size="' + (dotR * 1.2) + '" font-weight="700" font-family="sans-serif" data-corner-idx="' + i + '" style="cursor:pointer;pointer-events:auto">' + (i + 1) + '</text>';
+      }
+      svg += '</svg>';
+      svgWrap.innerHTML = svg;
+      svgWrap.querySelectorAll('[data-corner-idx]').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var idx = parseInt(el.getAttribute('data-corner-idx'), 10);
+          var cb = document.querySelector('#corner-list input[data-idx="' + idx + '"]');
+          if (cb) {
+            cb.checked = !cb.checked;
+            updateSvgDotOpacity();
+          }
+        });
+      });
+      list.innerHTML = '';
+      corners.forEach(function(c, idx) {
+        var color = (colors && colors[idx]) || '#0D99FF';
+        var item = document.createElement('label');
+        item.className = 'corner-list-item';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = true;
+        cb.dataset.idx = idx;
+        var dot = document.createElement('span');
+        dot.className = 'corner-dot';
+        dot.style.background = color;
+        dot.textContent = String(idx + 1);
+        var info = document.createElement('span');
+        info.className = 'corner-info';
+        info.textContent = '(' + c.position.x + ', ' + c.position.y + ')';
+        var rad = document.createElement('span');
+        rad.className = 'corner-radius';
+        rad.textContent = 'r=' + c.estimatedRadius + 'px';
+        cb.addEventListener('change', updateSvgDotOpacity);
+        item.appendChild(cb);
+        item.appendChild(dot);
+        item.appendChild(info);
+        item.appendChild(rad);
+        list.appendChild(item);
+      });
+    }
+    function updateSvgDotOpacity() {
+      var svgWrap = document.getElementById('corner-svg-wrap');
+      if (!svgWrap) return;
+      var cbs = document.querySelectorAll('#corner-list input[type="checkbox"]');
+      cbs.forEach(function(cb) {
+        var idx = cb.dataset.idx;
+        var els = svgWrap.querySelectorAll('[data-corner-idx="' + idx + '"]');
+        els.forEach(function(el) {
+          el.setAttribute('opacity', cb.checked ? '1' : '0.3');
+        });
+      });
+    }
+    function getSelectedCornerIndices() {
+      var cbs = document.querySelectorAll('#corner-list input[type="checkbox"]');
+      var indices = [];
+      cbs.forEach(function(cb) {
+        if (cb.checked) {
+          var c = cornerCandidates[parseInt(cb.dataset.idx, 10)];
+          if (c) indices.push(c.segmentIndex);
+        }
+      });
+      return indices;
+    }
+
+    document.getElementById('pick-corners-cb').addEventListener('change', function() {
+      if (this.checked) {
+        openCornerPanel();
+      } else {
+        closeCornerPanel();
+      }
+    });
+    document.getElementById('corner-back').addEventListener('click', function() {
+      closeCornerPanel();
+    });
+    document.getElementById('corner-apply').addEventListener('click', function() {
+      var indices = getSelectedCornerIndices();
+      parent.postMessage({ pluginMessage: { type: 'apply', command: 'inPlace', selectedCorners: indices } }, '*');
+    });
+
+    document.querySelectorAll('.option').forEach(function(el) {
+      el.onclick = function() {
+        document.querySelectorAll('.option').forEach(function(o) { o.classList.remove('selected'); });
+        el.classList.add('selected');
+        selectedOption = el.getAttribute('data-option');
+        updateApplyButton(lastHasSelection, lastSelectionCount, selectedOption);
+        updateCornerPickerVisibility();
+        parent.postMessage({ pluginMessage: { type: 'requestPreview', command: selectedOption } }, '*');
+      };
+    });
+
+    var applyBtn = document.getElementById('apply');
+    applyBtn.onclick = function() {
+      if (applyBtn.disabled) return;
+      parent.postMessage({ pluginMessage: { type: 'apply', command: selectedOption } }, '*');
+    };
+
+    document.getElementById('undo').onclick = function() {
+      parent.postMessage({ pluginMessage: { type: 'undo' } }, '*');
+    };
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (cornerPanelOpen) {
+          closeCornerPanel();
+          e.preventDefault();
+        } else if (document.getElementById('tolerance-section').classList.contains('visible')) {
+          setSettingsPanelOpen(false);
+          e.preventDefault();
+        } else {
+          parent.postMessage({ pluginMessage: { type: 'close' } }, '*');
+          e.preventDefault();
+        }
+      } else if (e.key === 'Enter') {
+        if (!applyBtn.disabled) applyBtn.click();
+        e.preventDefault();
+      }
+    });
+
+    function setSettingsPanelOpen(open) {
+      var btn = document.getElementById('settings-btn');
+      var main = document.getElementById('main-content');
+      var tol = document.getElementById('tolerance-section');
+      var footer = document.getElementById('build-date');
+      if (open) {
+        btn.classList.add('selected');
+        main.classList.add('hidden');
+        tol.classList.add('visible');
+        if (footer) footer.style.display = 'none';
+      } else {
+        btn.classList.remove('selected');
+        main.classList.remove('hidden');
+        tol.classList.remove('visible');
+        if (footer) footer.style.display = '';
+      }
+    }
+    document.getElementById('settings-btn').addEventListener('click', function() {
+      var tol = document.getElementById('tolerance-section');
+      setSettingsPanelOpen(!tol.classList.contains('visible'));
+    });
+    document.getElementById('tolerance-close').addEventListener('click', function() {
+      setSettingsPanelOpen(false);
+    });
+    document.getElementById('tolerance-reset').addEventListener('click', function() {
+      if (this.disabled) return;
+      parent.postMessage({ pluginMessage: { type: 'setTolerance', tolerance: { mergeDistancePx: DEFAULT_MERGE_PX, radiusSameRatio: DEFAULT_RADIUS_RATIO } } }, '*');
+    });
+
+    document.getElementById('merge-px').addEventListener('input', function() {
+      var v = parseInt(this.value, 10);
+      document.getElementById('merge-px-value').innerHTML = v + ' <span class="unit">px</span>';
+      updateResetButton();
+    });
+    document.getElementById('merge-px').addEventListener('change', function() {
+      var v = parseInt(this.value, 10);
+      if (!isNaN(v)) parent.postMessage({ pluginMessage: { type: 'setTolerance', tolerance: { mergeDistancePx: v, radiusSameRatio: getRadiusRatioFromSlider() } } }, '*');
+    });
+    document.getElementById('radius-ratio').addEventListener('input', function() {
+      var v = parseInt(this.value, 10) / 100;
+      document.getElementById('radius-ratio-value').textContent = v.toFixed(2);
+      updateResetButton();
+    });
+    document.getElementById('radius-ratio').addEventListener('change', function() {
+      var v = getRadiusRatioFromSlider();
+      var px = parseInt(document.getElementById('merge-px').value, 10) || 14;
+      parent.postMessage({ pluginMessage: { type: 'setTolerance', tolerance: { mergeDistancePx: px, radiusSameRatio: v } } }, '*');
+    });
+
+    window.onmessage = function(event) {
+      var msg = event.data.pluginMessage;
+      if (!msg) return;
+      if (msg.type === 'init') {
+        document.getElementById('version-author').textContent = msg.version ? 'V' + msg.version + ', By Aviran Revach' : 'V1.0.0, By Aviran Revach';
+        var buildTimestamp = msg.buildTimestamp || '';
+        var d = buildTimestamp ? new Date(buildTimestamp) : new Date();
+        var day = ('0' + d.getDate()).slice(-2);
+        var month = ('0' + (d.getMonth() + 1)).slice(-2);
+        var year = d.getFullYear();
+        var hours = ('0' + d.getHours()).slice(-2);
+        var mins = ('0' + d.getMinutes()).slice(-2);
+        document.getElementById('build-date').textContent = day + '.' + month + '.' + year + ' (' + hours + ':' + mins + ')';
+        lastHasSelection = msg.hasSelection;
+        lastSelectionCount = msg.selectionCount || 0;
+        updateApplyButton(lastHasSelection, lastSelectionCount, selectedOption);
+        updatePreview(msg.preview);
+        updateToleranceInputs(msg.tolerance);
+      }
+      if (msg.type === 'selectionChange') {
+        lastHasSelection = msg.hasSelection;
+        lastSelectionCount = msg.selectionCount || 0;
+        updateApplyButton(lastHasSelection, lastSelectionCount, selectedOption);
+        if (msg.tolerance) updateToleranceInputs(msg.tolerance);
+        parent.postMessage({ pluginMessage: { type: 'requestPreview', command: selectedOption } }, '*');
+        if (cornerPanelOpen) {
+          parent.postMessage({ pluginMessage: { type: 'detectCorners' } }, '*');
+        }
+      }
+      if (msg.type === 'corners') {
+        if (msg.error) {
+          document.getElementById('corner-svg-wrap').innerHTML = '<div class="corner-list-msg">' + msg.error + '</div>';
+          document.getElementById('corner-list').innerHTML = '';
+        } else {
+          renderCornerPanel(msg.corners, msg.colors, msg.paths, msg.bbox);
+        }
+      }
+      if (msg.type === 'preview') {
+        updatePreview(msg.preview);
+      }
+      if (msg.type === 'tolerance') {
+        updateToleranceInputs(msg.tolerance);
+      }
+      if (msg.type === 'result') {
+        if (cornerPanelOpen) closeCornerPanel();
+        feedbackEl.className = 'feedback ' + (msg.success ? 'success' : 'error');
+        feedbackMsg.textContent = msg.message;
+        document.getElementById('feedback-actions').style.display = msg.canUndo ? 'flex' : 'none';
+      }
+      if (msg.type === 'undoResult') {
+        feedbackEl.className = 'feedback success';
+        feedbackMsg.textContent = 'Undone.';
+        document.getElementById('feedback-actions').style.display = 'none';
+      }
+    };
+
+    parent.postMessage({ pluginMessage: { type: 'ready' } }, '*');
+  </script>
+</body>
+</html>
